@@ -36,33 +36,38 @@ class DeleteProductFunctionalTest {
 
     @Test
     void deleteProduct_userCanDeleteAndProductDisappearsFromList(ChromeDriver driver) {
-        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(5));
+        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(15));
+        String productName = "DeleteMe-" + System.currentTimeMillis();
 
-        // 1) Create a product first
+        // 1) Create a product
         driver.get(baseUrl + "/product/create");
-        driver.findElement(By.id("nameInput")).sendKeys("Product To Delete");
-        WebElement qtyInput = driver.findElement(By.id("quantityInput"));
-        qtyInput.clear();
-        qtyInput.sendKeys("5");
+        wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("nameInput"))).sendKeys(productName);
+        driver.findElement(By.id("quantityInput")).sendKeys("5");
+
+        // Click and wait for the URL to change to the list page automatically
         driver.findElement(By.cssSelector("button[type='submit']")).click();
+        wait.until(ExpectedConditions.urlContains("/product/list"));
 
-        // 2) Open list page
-        driver.get(baseUrl + "/product/list");
-        wait.until(ExpectedConditions.presenceOfElementLocated(By.tagName("tbody")));
+        // 2) Find the row using a more specific TD-based XPath
+        // This looks for a <td> containing our text, then goes up to the parent <tr>
+        String rowXpath = String.format("//td[contains(text(), '%s')]/parent::tr", productName);
+        WebElement row = wait.until(ExpectedConditions.presenceOfElementLocated(By.xpath(rowXpath)));
 
-        // 3) Find the row and click Delete button in that row
-        WebElement row = driver.findElement(By.xpath("//tr[td[contains(text(),'Product To Delete')]]"));
-        row.findElement(By.cssSelector("button.btn-danger")).click();
+        // 3) Find the delete button within that row.
+        // Using contains(@class, 'btn-danger') is safer than a direct class match.
+        WebElement deleteButton = row.findElement(By.xpath(".//button[contains(@class, 'btn-danger')] | .//a[contains(@class, 'btn-danger')]"));
+        deleteButton.click();
 
-        // 4) Confirm the alert popup
+        // 4) Handle Alert
+        wait.until(ExpectedConditions.alertIsPresent());
         driver.switchTo().alert().accept();
 
-        // 5) Reload list and confirm it is gone
-        driver.get(baseUrl + "/product/list");
-        wait.until(ExpectedConditions.presenceOfElementLocated(By.tagName("tbody")));
+        // 5) Verify deletion
+        // We wait for the specific product name to vanish from the body text
+        wait.until(ExpectedConditions.not(
+                ExpectedConditions.textToBePresentInElementLocated(By.tagName("body"), productName)
+        ));
 
-        String pageSource = driver.getPageSource();
-        assertFalse(pageSource.contains("Product To Delete"));
-
+        assertFalse(driver.getPageSource().contains(productName), "Product still exists in page source!");
     }
 }

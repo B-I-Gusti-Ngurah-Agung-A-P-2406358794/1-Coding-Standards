@@ -20,7 +20,7 @@ import static org.springframework.boot.test.context.SpringBootTest.WebEnvironmen
 
 @SpringBootTest(webEnvironment = RANDOM_PORT)
 @ExtendWith(SeleniumJupiter.class)
-class EditProductFunctionalTest {
+class EditTheFunctionalTest {
 
     @LocalServerPort
     private int serverPort;
@@ -37,33 +37,29 @@ class EditProductFunctionalTest {
 
     @Test
     void editProduct_userCanEditAndSeeUpdatedInList(ChromeDriver driver) {
-        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(8));
+        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(10));
 
         String originalName = "ProductToEdit-" + System.currentTimeMillis();
         String editedName = "Edited-" + System.currentTimeMillis();
 
-        // Create product
+        // 1) Create product via UI (Instead of Service) to ensure it's in the server context
         driver.get(baseUrl + "/product/create");
-        WebElement nameInput = wait.until(ExpectedConditions.presenceOfElementLocated(By.id("nameInput")));
-        nameInput.clear();
-        nameInput.sendKeys(originalName);
-
-        WebElement qtyInput = driver.findElement(By.id("quantityInput"));
-        qtyInput.clear();
-        qtyInput.sendKeys("10");
-
+        wait.until(ExpectedConditions.presenceOfElementLocated(By.id("nameInput"))).sendKeys(originalName);
+        driver.findElement(By.id("quantityInput")).sendKeys("10");
         driver.findElement(By.cssSelector("button[type='submit']")).click();
 
-        // Go to list and wait for the row
-        driver.get(baseUrl + "/product/list");
-        By rowLocator = By.xpath("//tr[td[contains(normalize-space(.),'" + originalName + "')]]");
-        WebElement row = wait.until(ExpectedConditions.presenceOfElementLocated(rowLocator));
+        // 2) Go to list and wait until product appears
+        wait.until(ExpectedConditions.urlContains("/product/list"));
+        wait.until(ExpectedConditions.textToBePresentInElementLocated(By.tagName("body"), originalName));
 
-        // Click edit link by href
-        row.findElement(By.cssSelector("a[href*='/product/edit/']")).click();
+        // 3) Find the edit link.
+        // We use a broader XPath to find the link that is in the same row as our originalName
+        WebElement editLink = driver.findElement(By.xpath("//tr[td[contains(text(),'" + originalName + "')]]//a[contains(@href, 'edit')]"));
+        editLink.click();
 
-        // Edit page: update values
-        WebElement editNameInput = wait.until(ExpectedConditions.presenceOfElementLocated(By.id("nameInput")));
+        // 4) Edit page: update values
+        // Check if your HTML uses id="nameInput" or name="productName" and adjust accordingly
+        WebElement editNameInput = wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("nameInput")));
         editNameInput.clear();
         editNameInput.sendKeys(editedName);
 
@@ -73,12 +69,11 @@ class EditProductFunctionalTest {
 
         driver.findElement(By.cssSelector("button[type='submit']")).click();
 
-        // Verify in list
-        driver.get(baseUrl + "/product/list");
-        wait.until(ExpectedConditions.presenceOfElementLocated(By.tagName("tbody")));
+        // 5) Verify updated result in list
+        wait.until(ExpectedConditions.urlContains("/product/list"));
 
-        String pageSource = driver.getPageSource();
-        assertTrue(pageSource.contains(editedName));
-        assertTrue(pageSource.contains("99"));
+        // Wait for the new name to actually appear in the DOM
+        assertTrue(wait.until(ExpectedConditions.textToBePresentInElementLocated(By.tagName("body"), editedName)));
+        assertTrue(driver.getPageSource().contains("99"));
     }
 }

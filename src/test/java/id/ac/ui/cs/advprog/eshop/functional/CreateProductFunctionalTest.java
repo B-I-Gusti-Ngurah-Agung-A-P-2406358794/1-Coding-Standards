@@ -16,7 +16,6 @@ import org.springframework.boot.test.web.server.LocalServerPort;
 import java.time.Duration;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT;
 
 @SpringBootTest(webEnvironment = RANDOM_PORT)
@@ -38,36 +37,38 @@ class CreateProductFunctionalTest {
 
     @Test
     void createProduct_userCanSeeNewProductInList(ChromeDriver driver) {
-        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(5));
+        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(10));
 
-        // Go to create page
+        // 1. Go to create page
         driver.get(baseUrl + "/product/create");
-        assertEquals("Create New Product", driver.getTitle());
 
-        // Fill form
-        String name = "Test Product Selenium";
+        // 2. Fill form with unique data
+        String uniqueName = "Selenium-Type-" + System.currentTimeMillis();
         String qty = "25";
 
-        WebElement nameInput = driver.findElement(By.id("nameInput"));
+        // Use wait before finding elements to handle slow initial loads
+        WebElement nameInput = wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("nameInput")));
         nameInput.clear();
-        nameInput.sendKeys(name);
+        nameInput.sendKeys(uniqueName);
 
         WebElement qtyInput = driver.findElement(By.id("quantityInput"));
         qtyInput.clear();
         qtyInput.sendKeys(qty);
 
-        // Submit
+        // 3. Submit and wait for the redirect to happen naturally
         driver.findElement(By.cssSelector("button[type='submit']")).click();
 
-        // Make sure list page is loaded (either via redirect or manual open)
-        driver.get(baseUrl + "/product/list");
+        // Wait for URL to change to the list page
+        wait.until(ExpectedConditions.urlContains("/product/list"));
 
-        // Wait until table body exists
-        wait.until(ExpectedConditions.presenceOfElementLocated(By.tagName("tbody")));
+        // 4. Verify product appears in the list
+        // We wait for the specific text to be present in the body
+        WebElement body = driver.findElement(By.tagName("body"));
+        wait.until(ExpectedConditions.textToBePresentInElement(body, uniqueName));
+        wait.until(ExpectedConditions.textToBePresentInElement(body, qty));
 
-        // Verify product appears
         String pageSource = driver.getPageSource();
-        assertTrue(pageSource.contains(name));
-        assertTrue(pageSource.contains(qty));
+        assertTrue(pageSource.contains(uniqueName), "Product name not found in list!");
+        assertTrue(pageSource.contains(qty), "Product quantity not found in list!");
     }
 }

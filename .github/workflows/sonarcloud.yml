@@ -40,3 +40,4 @@ jobs:
             -Dsonar.projectKey=B-I-Gusti-Ngurah-Agung-A-P-2406358794_1-Coding-Standards
             -Dsonar.organization=b-i-gusti-ngurah-agung-a-p-2406358794
             -Dsonar.java.binaries=build/classes/java/main
+            -Dsonar.coverage.jacoco.xmlReportPaths=build/reports/jacoco/test/jacocoTestReport.xml

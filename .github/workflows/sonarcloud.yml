@@ -3,7 +3,7 @@ name: SonarCloud analysis
 on:
   push:
     branches:
-      - "**"   # every branch
+      - "**"
   pull_request:
     branches:
       - "**"
@@ -14,12 +14,13 @@ permissions:
 
 jobs:
   sonarcloud:
-    name: SonarCloud
     runs-on: ubuntu-22.04
 
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0   # ✅ Fix shallow clone warning
 
       - name: Set up Java
         uses: actions/setup-java@v4
@@ -28,16 +29,9 @@ jobs:
           java-version: "21"
           cache: gradle
 
-      - name: Build (compile classes)
-        run: ./gradlew clean test classes
-
-      - name: SonarCloud Scan
-        uses: SonarSource/sonarcloud-github-action@v2
-        env:
-          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-        with:
-          args: >
-            -Dsonar.projectKey=B-I-Gusti-Ngurah-Agung-A-P-2406358794_1-Coding-Standards
-            -Dsonar.organization=b-i-gusti-ngurah-agung-a-p-2406358794
-            -Dsonar.java.binaries=build/classes/java/main
-            -Dsonar.coverage.jacoco.xmlReportPaths=build/reports/jacoco/test/jacocoTestReport.xml
+      - name: Build, Test, and Run SonarCloud
+        run: ./gradlew clean test jacocoTestReport sonarqube \
+          -Dsonar.projectKey=B-I-Gusti-Ngurah-Agung-A-P-2406358794_1-Coding-Standards \
+          -Dsonar.organization=b-i-gusti-ngurah-agung-a-p-2406358794 \
+          -Dsonar.host.url=https://sonarcloud.io \
+          -Dsonar.token=${{ secrets.SONAR_TOKEN }}

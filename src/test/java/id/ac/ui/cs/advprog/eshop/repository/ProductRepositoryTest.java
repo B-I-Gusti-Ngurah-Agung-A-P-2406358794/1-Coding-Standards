@@ -143,4 +143,84 @@ class ProductRepositoryTest {
         assertFalse(deleted);
     }
 
+    @Test
+    void testCreate_shouldGenerateId_whenIdIsNull() {
+        Product product = new Product();
+        product.setProductId(null);
+        product.setProductName("No ID Product");
+        product.setProductQuantity(1);
+
+        Product saved = productRepository.create(product);
+
+        assertNotNull(saved.getProductId());
+        assertFalse(saved.getProductId().isEmpty());
+    }
+
+    @Test
+    void testCreate_shouldGenerateId_whenIdIsEmpty() {
+        Product product = new Product();
+        product.setProductId("");
+        product.setProductName("Empty ID Product");
+        product.setProductQuantity(1);
+
+        Product saved = productRepository.create(product);
+
+        assertNotNull(saved.getProductId());
+        assertFalse(saved.getProductId().isEmpty());
+    }
+
+    @Test
+    void testFindById_whenProductExistsButIdDoesNotMatch_shouldReturnNull() {
+        Product product = new Product();
+        product.setProductId("id-1");
+        product.setProductName("A");
+        product.setProductQuantity(10);
+
+        productRepository.create(product);
+
+        // repository is NOT empty, but id does not match
+        Product found = productRepository.findById("different-id");
+
+        assertNull(found);
+    }
+
+    @Test
+    void testUpdate_whenListNotEmptyButIdNotMatching_shouldReturnNull() {
+        Product existing = new Product();
+        existing.setProductId("id-1");
+        existing.setProductName("Old");
+        existing.setProductQuantity(10);
+        productRepository.create(existing);
+
+        Product updated = new Product();
+        updated.setProductId("different-id"); // not matching
+        updated.setProductName("New");
+        updated.setProductQuantity(99);
+
+        Product result = productRepository.update(updated);
+
+        assertNull(result);
+
+        // also confirm original is unchanged
+        Product stillThere = productRepository.findById("id-1");
+        assertNotNull(stillThere);
+        assertEquals("Old", stillThere.getProductName());
+        assertEquals(10, stillThere.getProductQuantity());
+    }
+
+    @Test
+    void testDelete_whenListNotEmptyButIdNotMatching_shouldReturnFalse() {
+        Product existing = new Product();
+        existing.setProductId("id-1");
+        existing.setProductName("A");
+        existing.setProductQuantity(10);
+        productRepository.create(existing);
+
+        boolean deleted = productRepository.delete("different-id"); // not matching
+
+        assertFalse(deleted);
+
+        // confirm the product is still there
+        assertNotNull(productRepository.findById("id-1"));
+    }
 }

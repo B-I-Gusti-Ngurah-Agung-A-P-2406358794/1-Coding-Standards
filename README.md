@@ -1,9 +1,18 @@
-### Module 1: Coding Standards
-
+## Advanced Programming Task
 Name: I Gusti Ngurah Agung Airlangga Putra
 
 Class / NPM: B / 2406358794
 
+## Module 2
+#### ( Module 1 Read me is below module 2 )
+### Q1: Code quality issue(s) fixed and strategy
+
+Selama exercise ini, saya memperbaiki beberapa code quality issues yang terdeteksi oleh SonarCloud. Pertama, saya menghilangkan duplikasi literal "redirect:/product/list" di ProductController dengan membuat sebuah konstanta (private static final String REDIRECT_PRODUCT_LIST) dan mengganti seluruh penggunaan literal tersebut dengan konstanta agar kode lebih maintainable dan mengurangi risiko typo. Kedua, saya menghapus commented-out code di ProductRepositoryTest karena kode yang tidak digunakan dapat menurunkan keterbacaan dan membingungkan developer lain. Ketiga, saya menambahkan penjelasan singkat pada method contextLoads() di EshopApplicationTests untuk menjelaskan bahwa method tersebut memang sengaja kosong dan digunakan untuk memastikan Spring context berhasil dijalankan. Strategi saya adalah memperbaiki issue yang berdampak pada maintainability terlebih dahulu, memastikan perubahan tidak mengubah perilaku aplikasi, lalu memverifikasi kembali melalui pipeline CI/CD dan hasil analisis SonarCloud.
+
+### Q2: Evaluation of CI/CD implementation
+
+Menurut saya, implementasi yang saya buat sudah memenuhi konsep Continuous Integration (CI) karena setiap ada push atau pull request, GitHub Actions secara otomatis menjalankan proses build dan test sehingga perubahan kode langsung tervalidasi tanpa perlu eksekusi manual. Selain itu, integrasi dengan SonarCloud memungkinkan analisis kualitas kode dilakukan secara otomatis pada setiap perubahan, sehingga potensi code smells atau maintainability issues dapat terdeteksi lebih awal. Untuk Continuous Deployment (CD), aplikasi secara otomatis ter-deploy ke PaaS (Render) setiap ada perubahan pada branch utama (main), sehingga versi terbaru aplikasi langsung tersedia secara online tanpa proses deploy manual. Dengan adanya otomatisasi build, test, code analysis, dan deployment, workflow ini sudah mencerminkan praktik dasar CI/CD yang terintegrasi dan berkelanjutan.
+## Module 1
 ### Reflection 1
 In this project, I implemented the edit and delete product features using Spring Boot and followed several clean code principles that I learned in this module. I tried to keep the code simple and easy to read by separating the controller, service, and repository layers so each class has a clear responsibility. I also used meaningful method names like update, and delete so the purpose of each function is easy to understand. In addition, I avoided repeating logic by placing business processes inside the service layer instead of directly in the controller. For secure coding, I used POST requests for actions that change data such as edit and delete, and I avoided exposing internal data unnecessarily. I also added basic checks, such as redirecting to the product list page when a product is not found, to prevent errors.
 

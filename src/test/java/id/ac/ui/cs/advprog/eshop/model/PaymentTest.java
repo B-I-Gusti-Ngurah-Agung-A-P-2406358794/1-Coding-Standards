@@ -2,6 +2,8 @@ package id.ac.ui.cs.advprog.eshop.model;
 
 import org.junit.jupiter.api.Test;
 
+import id.ac.ui.cs.advprog.eshop.enums.OrderStatus;
+
 import java.util.HashMap;
 import java.util.Map;
 
@@ -17,6 +19,7 @@ class PaymentTest {
                 .orderTime(1708560000L)
                 .author("Author")
                 .products(java.util.List.of(new Product()))
+                .status(OrderStatus.WAITING_PAYMENT.getValue())
                 .build();
 
         Map<String, String> paymentData = new HashMap<>();

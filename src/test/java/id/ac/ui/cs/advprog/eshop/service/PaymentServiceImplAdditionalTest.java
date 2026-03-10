@@ -84,6 +84,22 @@ class PaymentServiceImplAdditionalTest {
     }
 
     @Test
+    void addPayment_voucher_rejectsWhenDigitCountLessThanEight() {
+        Map<String, String> data = new HashMap<>();
+        // 16 chars, starts with ESHOP, but only 3 digits: 1,2,3
+        data.put("voucherCode", "ESHOPABCDEF123GH");
+
+        ArgumentCaptor<Payment> captor = ArgumentCaptor.forClass(Payment.class);
+
+        Payment result = paymentService.addPayment(order, "VOUCHER", data);
+
+        verify(paymentRepository, times(1)).save(captor.capture());
+        Payment saved = captor.getValue();
+        assertEquals("REJECTED", saved.getStatus());
+        assertEquals(result, saved);
+    }
+
+    @Test
     void addPayment_bankTransfer_rejectsWhenBankNameNull() {
         Map<String, String> data = new HashMap<>();
         data.put("bankName", null);

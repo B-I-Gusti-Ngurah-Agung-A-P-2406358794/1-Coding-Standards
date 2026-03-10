@@ -102,5 +102,16 @@ class PaymentRepositoryTest {
         assertTrue(all.stream().anyMatch(p -> p.getId().equals("payment-1")));
         assertTrue(all.stream().anyMatch(p -> p.getId().equals("payment-2")));
     }
+
+    @Test
+    void findAll_returnsDefensiveCopy() {
+        Payment payment = payments.get(0);
+        paymentRepository.save(payment);
+
+        List<Payment> all = paymentRepository.findAll();
+        all.clear();
+
+        assertEquals(1, paymentRepository.findAll().size());
+    }
 }
 

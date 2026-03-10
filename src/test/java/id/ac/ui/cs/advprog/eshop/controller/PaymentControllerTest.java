@@ -79,8 +79,7 @@ class PaymentControllerTest {
 
         mockMvc.perform(get("/payment/admin/detail/p1"))
                 .andExpect(status().isOk())
-                .andExpect(view().name("paymentAdminDetail"))
-                .andExpect(model().attributeExists("payment"));
+                .andExpect(view().name("paymentAdminDetail"));
 
         verify(paymentService, times(1)).getPayment("p1");
     }

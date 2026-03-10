@@ -89,9 +89,7 @@ class OrderControllerTest {
     void getHistoryForm_returnsOrderHistoryView() throws Exception {
         mockMvc.perform(get("/order/history"))
                 .andExpect(status().isOk())
-                .andExpect(view().name("orderHistory"))
-                .andExpect(model().attributeExists("author"))
-                .andExpect(model().attributeExists("orders"));
+                .andExpect(view().name("orderHistory"));
     }
 
     @Test

@@ -3,6 +3,24 @@ Name: I Gusti Ngurah Agung Airlangga Putra
 
 Class / NPM: B / 2406358794
 
+## Module 4
+### Tutorial reflection
+
+### 1) Percival Reflection
+
+Berdasarkan tutorial yang dikerjakan, alur Test-Driven Development (RED lalu GREEN lalu REFACTOR) terasa cukup membantu karena memberikan urutan kerja yang jelas dalam mengembangkan fitur. Pada tutorial, setiap bagian seperti Order model, repository, dan service dimulai dengan membuat test terlebih dahulu sebelum menulis implementasi. Dengan cara ini, perilaku yang diharapkan sudah ditentukan sejak awal, sehingga implementasi yang dibuat menjadi lebih terarah dan sesuai dengan kebutuhan.
+
+Pada tahap GREEN, implementasi ditulis secukupnya agar test dapat berjalan dengan benar. Pendekatan ini membantu menjaga kode tetap sederhana dan tidak menambahkan logika yang belum diperlukan. Setelah semua test lolos, tahap REFACTOR digunakan untuk memperbaiki struktur kode tanpa mengubah perilaku, misalnya dengan menggunakan enum OrderStatus untuk menggantikan nilai string yang sebelumnya ditulis langsung di dalam kode. Karena sudah ada test, perubahan tersebut dapat dilakukan dengan lebih aman.
+
+Secara keseluruhan, alur TDD pada tutorial ini cukup efektif karena membantu memastikan program berjalan sesuai harapan, mempermudah proses refactor, dan membuat proses pengembangan lebih terstruktur. Dengan adanya test sejak awal, setiap perubahan dapat langsung diverifikasi sehingga risiko kesalahan dapat dikurangi.
+
+### 2) F.I.R.S.T. Reflection
+
+Unit test yang dibuat pada tutorial sudah cukup sesuai dengan prinsip F.I.R.S.T. Test yang dibuat tergolong Fast karena hanya menguji bagian kecil dari program seperti model, repository, dan service tanpa melibatkan sistem eksternal. Test juga Independent, karena setiap test memiliki data awal sendiri dan tidak bergantung pada hasil test lain.
+
+Dari sisi Repeatable, test dapat dijalankan berulang kali dengan hasil yang sama karena semua input sudah ditentukan di dalam test. Test juga Self-validating, karena menggunakan assertion seperti assertEquals dan assertThrows sehingga hasil test dapat diketahui secara otomatis tanpa pemeriksaan manual. Selain itu, test sudah Timely, karena pada tutorial test dibuat terlebih dahulu sebelum implementasi, sesuai dengan konsep Test-Driven Development.
+
+Dengan mengikuti langkah-langkah pada tutorial, test yang dihasilkan sudah memenuhi prinsip F.I.R.S.T. dengan cukup baik. Hal ini membuat kode lebih mudah dipelihara dan memberikan keyakinan bahwa perubahan yang dilakukan saat refactoring tidak merusak fungsi yang sudah ada.
 ## Module 3
 ### SOLID Principles Reflection
 

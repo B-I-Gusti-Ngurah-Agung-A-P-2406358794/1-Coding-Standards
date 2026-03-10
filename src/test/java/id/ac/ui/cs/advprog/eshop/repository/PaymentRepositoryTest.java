@@ -92,6 +92,14 @@ class PaymentRepositoryTest {
     }
 
     @Test
+    void findById_returnsNullIfDifferentIdExists() {
+        // Save a payment with a different id so the loop iterates but does not match
+        paymentRepository.save(payments.get(0)); // id = "payment-1"
+
+        assertNull(paymentRepository.findById("other-id"));
+    }
+
+    @Test
     void findAll_returnsAllSavedPayments() {
         for (Payment payment : payments) {
             paymentRepository.save(payment);

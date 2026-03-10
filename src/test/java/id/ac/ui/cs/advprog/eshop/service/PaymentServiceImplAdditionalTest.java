@@ -68,6 +68,22 @@ class PaymentServiceImplAdditionalTest {
     }
 
     @Test
+    void addPayment_voucher_rejectsWhenPrefixIsNotEshop() {
+        Map<String, String> data = new HashMap<>();
+        // 16 characters, but does NOT start with "ESHOP"
+        data.put("voucherCode", "ABCD1234EFGH5678");
+
+        ArgumentCaptor<Payment> captor = ArgumentCaptor.forClass(Payment.class);
+
+        Payment result = paymentService.addPayment(order, "VOUCHER", data);
+
+        verify(paymentRepository, times(1)).save(captor.capture());
+        Payment saved = captor.getValue();
+        assertEquals("REJECTED", saved.getStatus());
+        assertEquals(result, saved);
+    }
+
+    @Test
     void addPayment_bankTransfer_rejectsWhenBankNameNull() {
         Map<String, String> data = new HashMap<>();
         data.put("bankName", null);

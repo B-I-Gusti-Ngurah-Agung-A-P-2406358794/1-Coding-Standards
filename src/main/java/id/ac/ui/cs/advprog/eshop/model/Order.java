@@ -33,7 +33,9 @@ public class Order {
 
     public Order(String id, List<Product> products, long orderTime, String author, String status) {
         this(id, products, orderTime, author);
-        this.setStatus(status);
+        if (status != null) {
+            this.setStatus(status);
+        }
     }
 
     public void setStatus(String status) {

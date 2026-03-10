@@ -16,6 +16,8 @@ public class PaymentServiceImpl implements PaymentService {
 
     private static final String METHOD_VOUCHER = "VOUCHER";
     private static final String METHOD_BANK_TRANSFER = "BANK_TRANSFER";
+    private static final String STATUS_SUCCESS = "SUCCESS";
+    private static final String STATUS_REJECTED = "REJECTED";
 
     @Autowired
     private PaymentRepository paymentRepository;
@@ -43,11 +45,11 @@ public class PaymentServiceImpl implements PaymentService {
     public Payment setStatus(Payment payment, String status) {
         payment.setStatus(status);
 
-        if ("SUCCESS".equals(status)) {
+        if (STATUS_SUCCESS.equals(status)) {
             Order updatedOrder = orderService.updateStatus(
                     payment.getOrder().getId(), OrderStatus.SUCCESS.getValue());
             payment.setOrder(updatedOrder);
-        } else if ("REJECTED".equals(status)) {
+        } else if (STATUS_REJECTED.equals(status)) {
             Order updatedOrder = orderService.updateStatus(
                     payment.getOrder().getId(), OrderStatus.FAILED.getValue());
             payment.setOrder(updatedOrder);
@@ -71,18 +73,18 @@ public class PaymentServiceImpl implements PaymentService {
         if (METHOD_VOUCHER.equals(method)) {
             String voucherCode = paymentData.get("voucherCode");
             if (isValidVoucherCode(voucherCode)) {
-                return "SUCCESS";
+                return STATUS_SUCCESS;
             }
-            return "REJECTED";
+            return STATUS_REJECTED;
         }
 
         if (METHOD_BANK_TRANSFER.equals(method)) {
             String bankName = paymentData.get("bankName");
             String referenceCode = paymentData.get("referenceCode");
             if (isNullOrEmpty(bankName) || isNullOrEmpty(referenceCode)) {
-                return "REJECTED";
+                return STATUS_REJECTED;
             }
-            return "SUCCESS";
+            return STATUS_SUCCESS;
         }
 
         return "WAITING_PAYMENT";
